@@ -35,6 +35,74 @@ pip install -r requirements.txt
 ```bash
 python segmentation_script.py
 ```
+---
+
+## Usage for Web Application:
+
+1. **Run the Flask Application**: 
+   - Ensure you have all the dependencies installed by running the following command:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   
+2. **Start the Flask App**:
+   - Replace the `image_path` and any necessary configurations in the `app.py` file if required.
+   - Start the Flask server by running:
+   ```bash
+   python app.py
+   ```
+   - This will start a local web server, and you can access the app in your browser by navigating to `http://127.0.0.1:5000/`.
+
+3. **Uploading an Image**:
+   - On the web app interface, use the file upload option to select and upload an image.
+   - The app will process the image, perform segmentation using the pre-trained DeepLabV3 model, separate the foreground and background, and add text to the background.
+   
+4. **View Results**:
+   - After uploading, the app will display:
+     - **Original Image**
+     - **Segmentation Map** (color-coded)
+     - **Foreground Image**
+     - **Background with Text Overlay** (in a separate preview section)
+   
+5. **Customization**:
+   - You can modify the text that is added to the background through the web interface.
+   - The output will be displayed dynamically in a preview area.
+
+---
+
+## File Structure:
+
+The project follows a simple structure to keep the code organized:
+
+```
+deeplabv3-image-segmentation/
+│
+├── app.py                  # Flask application for the web interface
+├── segmentation_script.py  # Standalone script for running segmentation
+├── static/                 # Static folder for serving uploaded images
+│   ├── uploads/            # Folder for storing uploaded images temporarily
+│   └── results/            # Folder for saving processed results
+├── templates/              # HTML templates for rendering the web interface
+│   └── index.html          # Main HTML page for the web app
+├── requirements.txt        # List of Python dependencies
+├── README.md               # Project documentation
+└── LICENSE                 # License file
+```
+
+### Detailed File Breakdown:
+- **`app.py`**: This is the main entry point for the web application. It handles routing, processing of images, and rendering the results on the frontend.
+  
+- **`segmentation_script.py`**: A standalone script that can be used to run the segmentation process outside of the web app context. Useful for testing or batch processing.
+  
+- **`static/`**: A folder for serving files such as uploaded images and result images. The `uploads/` folder stores the raw images that are uploaded by the user, and `results/` stores the output images after processing.
+  
+- **`templates/`**: Contains the HTML files used to render the web interface. The `index.html` file is the primary interface where users can upload images and view the results.
+
+- **`requirements.txt`**: Contains the Python dependencies required to run the project, including Flask, PyTorch, torchvision, and others.
+  
+- **`README.md`**: This file, which contains the documentation for the project.
+
+---
 
 ## Example Output:
 - **Original Image**
