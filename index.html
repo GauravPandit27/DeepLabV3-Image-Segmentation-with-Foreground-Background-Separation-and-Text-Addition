@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Segmentation Tool</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #canvas {
+            border: 1px solid #ccc;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Segmentation</h1>
+        <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" id="imageInput" required>
+            <input type="text" name="text" placeholder="Enter Text" id="textInput" required>
+            
+            <!-- Hidden fields for bounding box coordinates -->
+            <input type="hidden" name="x1" id="x1" />
+            <input type="hidden" name="y1" id="y1" />
+            <input type="hidden" name="x2" id="x2" />
+            <input type="hidden" name="y2" id="y2" />
+            
+            <button type="button" onclick="previewImage()">Preview Image</button>
+            <button type="submit" id="submitBtn" style="display: none;">Upload and Process</button>
+        </form>
+        
+        <canvas id="canvas" width="500" height="500"></canvas>
+    </div>
+
+    <script>
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let image = new Image();
+        let isDrawing = false;
+        let startX, startY;
+        let x1, y1, x2, y2;
+
+        // Handle file input and display the image
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    image.onload = function() {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas before drawing the new image
+                        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                    };
+                    image.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Start drawing on mouse down
+        canvas.addEventListener('mousedown', function(e) {
+            isDrawing = true;
+            startX = e.offsetX;
+            startY = e.offsetY;
+        });
+
+        // Draw the bounding box on mouse move
+        canvas.addEventListener('mousemove', function(e) {
+            if (isDrawing) {
+                let width = e.offsetX - startX;
+                let height = e.offsetY - startY;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear canvas to re-draw image and box
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                ctx.beginPath();
+                ctx.rect(startX, startY, width, height);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        });
+
+        // Stop drawing and set coordinates
+        canvas.addEventListener('mouseup', function(e) {
+            isDrawing = false;
+            x1 = startX;
+            y1 = startY;
+            x2 = e.offsetX;
+            y2 = e.offsetY;
+
+            // Set the hidden form fields with the coordinates
+            document.getElementById('x1').value = x1;
+            document.getElementById('y1').value = y1;
+            document.getElementById('x2').value = x2;
+            document.getElementById('y2').value = y2;
+
+            // Enable the submit button
+            document.getElementById('submitBtn').style.display = 'inline-block';
+        });
+
+        // Preview the image with bounding box
+        function previewImage() {
+            // You can add preview logic here (e.g., showing the current state of the image and box)
+            alert('Bounding box coordinates set. Ready to submit!');
+        }
+    </script>
+</body>
+</html>
+
